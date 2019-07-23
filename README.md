@@ -2,7 +2,7 @@
 ### Installation de facila kalkulo
 ```
 vous devez avoir installé au préalable :
-- perl et perl TK ( Tk.pm )
+- perl et perl-tk ( Tk.pm )
 - facila/share et facila/Net-Kalk
 exécuter : ./install.sh kalkulo 1.00
 ```
