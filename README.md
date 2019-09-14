@@ -1,10 +1,13 @@
 # kalkulo : Calculatrice IP
 ### Installation de facila kalkulo
 ```
+installation en root
 vous devez avoir installé au préalable :
 - perl et perl-tk ( Tk.pm )
 - facila/share et facila/Net-Kalk
-exécuter : ./install.sh kalkulo 1.00
+exécuter :
+chmod 744 install.sh
+./install.sh kalkulo 1.00
 ```
 ### Utilisation de facila kalkulo
 ```
