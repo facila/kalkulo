@@ -7,7 +7,11 @@ vous devez avoir installé au préalable :
 - facila/share et facila/Net-Kalk
 exécuter :
 chmod 744 install.sh
-./install.sh kalkulo 1.00
+./install.sh kalkulo 1.10
+```
+### Versions
+```
+1.10 Gestion des fichiers UTF-8
 ```
 ### Utilisation de facila kalkulo
 ```
