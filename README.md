@@ -11,6 +11,7 @@ chmod 744 install.sh
 ```
 ### Versions
 ```
+1.00 Première version
 1.10 Gestion des fichiers UTF-8
 ```
 ### Utilisation de facila kalkulo
