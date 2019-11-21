@@ -7,13 +7,14 @@ vous devez avoir installé au préalable :
 - facila/share et facila/Net-Kalk
 exécuter :
 chmod 744 install.sh
-./install.sh kalkulo 1.20
+./install.sh kalkulo 1.21
 ```
 ### Versions
 ```
 1.00 Première version
 1.10 Gestion des fichiers UTF-8
 1.20 Nouvelle fonction : Calcul du réseau qui inclus une liste de réseaux
+1.21 Correction Bug : fonction inluded
 ```
 ### Utilisation de facila kalkulo
 ```
