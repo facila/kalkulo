@@ -7,7 +7,7 @@ vous devez avoir installé au préalable :
 - facila/Net-Kalk
 exécuter :
 chmod 744 install.sh
-./install.sh kalkulo.2.00.tar.gz
+./install.sh kalkulo.2.01.tar.gz
 ```
 ### Utilisation de facila kalkulo
 ```
