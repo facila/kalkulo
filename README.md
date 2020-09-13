@@ -4,7 +4,7 @@
 installation en root
 vous devez avoir installé au préalable :
 - perl et perl-tk ( Tk.pm )
-- facila/Net-Kalk
+- facila/Net-Kalk depuis le CPAN : https://metacpan.org/pod/Net::Kalk
 exécuter :
 chmod 744 install.sh
 ./install.sh kalkulo.2.01.tar.gz
