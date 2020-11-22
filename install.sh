@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# l'installation se fait en root
 # se positionner dans le répertoire contenant install.sh et le fichier .tar.gz
-# exécuter la commande : sh install.sh
+# exécuter la commande : sudo sh install.sh
 
 APPLI=kalkulo
 VERSION=2.02
@@ -11,9 +10,9 @@ VERSION=2.02
 
 # vérification des dépendances
 ERROR=''
-[ "`perl -v`"                              = '' ] && ERROR=$ERROR"perl   "
-[ "`perl -e 'use Tk'        2>/dev/null`" != '' ] && ERROR=$ERROR"perl-tk   "
-[ "`perl -e 'use Net::Kalk' 2>/dev/null`" != '' ] && ERROR=$ERROR"facila/Net-Kalk"
+[ "`perl -v`"                      = '' ] && ERROR=$ERROR"perl   "
+[ "`perl -e 'use Tk'        2>&1`" = '' ] && ERROR=$ERROR"perl-tk   "
+[ "`perl -e 'use Net::Kalk' 2>&1`"!= '' ] && ERROR=$ERROR"facila/Net-Kalk"
 [ "$ERROR" != '' ] && { echo "vous devez d'abbord installer : $ERROR" ; exit ; }
 
 FILE=$APPLI.$VERSION.tar.gz
