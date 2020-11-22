@@ -12,7 +12,7 @@ VERSION=2.02
 ERROR=''
 [ "`perl -v`"                              = '' ] && ERROR=$ERROR"perl   "
 [ "`perl -e 'use Tk'        2>/dev/null`" != '' ] && ERROR=$ERROR"perl-tk   "
-[ "`perl -e 'use Net::Kalk' 2>/dev/null`" != '' ] && ERROR=$ERROR"Net-Kalk"
+[ "`perl -e 'use Net::Kalk' 2>/dev/null`" != '' ] && ERROR=$ERROR"facila/Net-Kalk"
 [ "$ERROR" != '' ] && { echo "vous devez d'abbord installer : $ERROR" ; exit ; }
 
 FILE=kalkulo.$VERSION.tar.gz
