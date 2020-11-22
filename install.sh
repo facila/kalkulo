@@ -10,9 +10,9 @@ VERSION=2.02
 
 # vérification des dépendances
 ERROR=''
-[ "`perl -v`"                      = '' ] && ERROR=$ERROR"perl   "
+[ "`perl -v                 2>&1`" = '' ] && ERROR=$ERROR"perl   "
 [ "`perl -e 'use Tk'        2>&1`" = '' ] && ERROR=$ERROR"perl-tk   "
-[ "`perl -e 'use Net::Kalk' 2>&1`"!= '' ] && ERROR=$ERROR"facila/Net-Kalk"
+[ "`perl -e 'use Net::Kalk' 2>&1`" = '' ] && ERROR=$ERROR"facila/Net-Kalk"
 [ "$ERROR" != '' ] && { echo "vous devez d'abbord installer : $ERROR" ; exit ; }
 
 FILE=$APPLI.$VERSION.tar.gz
