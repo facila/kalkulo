@@ -8,7 +8,7 @@ vous devez avoir installé au préalable :
 - facila/Net::Kalk depuis le CPAN : https://metacpan.org/pod/Net::Kalk
 
 se positionner dans le répertoire contenant install.sh et kalkulo.2.02.tar.gz et exécuter :
-sh install.sh kalkulo.2.02.tar.gz
+sh install.sh
 ```
 ### Utilisation de facila kalkulo
 ```
