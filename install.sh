@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # l'installation se fait en root
-# se positionner dans le répertoire contenant install.sh
+# se positionner dans le répertoire contenant install.sh et le fichier .tar.gz
 # exécuter la commande : sh install.sh
 
 APPLI=kalkulo
