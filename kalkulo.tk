@@ -1,0 +1,522 @@
+#!/usr/bin/perl -w
+
+# version  : 2.10 - November 2020
+# author   : Thierry Le Gall
+# contact  : facila@gmx.fr
+# web site : https://github.com/facila/kalkulo
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# fonctions réseau
+sub net_add_mask {
+    return if $page ne 'net';
+    return if $f{$page} !~ /Entry/;
+    return if $add_mask eq '';
+
+    space_0(\$add_mask);
+    space_1(\$add_mask);
+    $add_mask =~ s/\s+/ /g;
+
+    @add_mask = split/\s+/,$add_mask;
+    if ( @add_mask  > 2 ) { config_error($e{add_mask}); return }
+
+    if ( @add_mask == 1 ) {
+       $x = $y = $add_mask[0];
+       if    (   &net_mask ne 'err'        ) { $ip = $x ; $ip = $mask if $x eq $cidr }
+       elsif ( ! Net::Kalk::error('ip',$x) ) { $ip = $x; for(@net) { $$_ = '' } for(@mask) { $$_ = '' } }
+       elsif ( $x =~ /(.*)\/(.*)/          ) { @add_mask = ($1,$2) }
+       else                                  { config_error($e{add_mask}); return } }
+
+    if ( @add_mask == 2 ) {
+       $x = $add_mask[0]; if ( Net::Kalk::error('ip',$x) ) { config_error($e{add_mask}); return }
+       $y = $add_mask[1]; return if &net_mask eq 'err';
+       $ip = $x }
+
+    config_entry($e{add_mask});
+
+    if ( $ip ) {
+       foreach(@add) {
+          $fct = "Net::Kalk::$_";
+          $$_ = &$fct('ip',$ip);
+          config_entry($e{$_}) } }
+
+    if ( $mask ) { $mask_cidr = "$mask /$cidr" }
+
+    if ( $ip && $mask ) { ($network,$broadcast,$nb_add,$nb_net) = split/ /,Net::Kalk::net_all($ip,$mask) }
+
+#    $f{$page}->icursor('e');
+#    $p{$page}->update }; # pour problème aléatoire d'affichage
+    }
+
+sub net_mask {
+    $y  =~ tr/\///d;
+    $y1 = Net::Kalk::invers($y);
+    $y2 = Net::Kalk::mask($y);
+
+    $mask = '';
+    if    (        ! Net::Kalk::error('mask',$y ) ) { $mask = $y }
+    elsif ( $y1 && ! Net::Kalk::error('mask',$y1) ) { $mask = $y1 }
+    elsif ( $y2 && ! Net::Kalk::error('mask',$y2) ) { $mask = $y2 }
+
+    if ( $mask ) {
+       $cidr     = Net::Kalk::mask($mask);
+       $wildcard = Net::Kalk::invers($mask) }
+    else { config_error($e{add_mask}); return 'err' } }
+
+sub net_add {
+    my $add = '';
+    for(@add) { $add = $_ if $f{net} eq $e{$_} }
+    return if $$add eq '';
+    space_0(\$$add);
+    space_1(\$$add);
+
+    $x = Net::Kalk::ip($add,$$add);
+    if ( ! defined($x) || Net::Kalk::error('ip',$x) ) { config_error($e{$add}); return }
+
+    config_entry($e{$add});
+    $ip = $x;
+    $add_mask = "$ip $mask";
+
+    foreach(@add) {
+       next if $_ eq $add;
+       $fct = "Net::Kalk::$_";
+       $$_ = &$fct('ip',$ip);
+       config_entry($e{$_}) } }
+
+# fonctions editer
+sub get { chomp($get = $edit->get('1.0','end')) }
+
+sub find {
+    &get;
+    return if ! $get;
+    return if ! $edit1;
+
+    $text = '';
+    foreach (split/\n/,$get) {
+       next if $edit2 && /$edit2/;
+       $text .= "$_\n" if /$edit1/ }
+    &display('',$text) }
+
+sub replace {
+    &get;
+    return if ! $get;
+    return if ! $edit1;
+    $edit2 = '' if ! $edit2 ;
+    $get =~ s/$edit1/$edit2/g;
+    &display('',$get) }
+
+sub format {
+    &get;
+    return if ! $get;
+
+    my $edit0 = my $tmp0 = my $err = my $f_max = 0; # $f_max = nb colonne max pour f , s et i
+    
+    # recherche des options et des erreurs sur $edit2
+    $d = '\s+'; $d0 = ' '; # $d0 utilisé pour transformer fx-y en f. f. f.
+    $s = $i = $a = 0; # $a tri s ou i
+    if ( $edit2 ) {
+       $edit0 = "$edit2 ";
+       if ( $edit0 =~ /d(.*?) / ) { $d = $1; $d0 = $d }
+       if ( $edit0 =~ /s(\d+) / ) { $s = $1; $a = $s ; $f_max = $s if $s > $f_max } 
+       if ( $edit0 =~ /i(\d+) / ) { $i = $1; $a = $i ; $f_max = $i if $i > $f_max }
+
+       $edit0 =~ tr/ \t//d; $edit0 =~ s/d$d//; $edit0 =~ s/s$s//; $edit0 =~ s/i$i//;
+       if    ( $edit0   ) { config_error($e{edit2}); $err = 1 }
+       elsif ( $s && $i ) { config_error($e{edit2}); $err = 1 }
+       else               { config_entry($e{edit2}) } }
+
+    # edit0 = edit1 + valeurs par défaut , edit0 sera utilisé par la suite , edit1 n'est pas modifié
+    if    ( ! $edit1 && ! $a         ) { $err = 1 }
+    elsif ( ! $edit1                 ) { $edit0 = $v{all_line} }
+    elsif (   $edit1 =~ /^n\d+-\d+$/ ) { $edit0 = "$edit1 $v{all_line}" }
+    else                               { $edit0 = $edit1 } 
+
+    # recherche des champs fx pour les erreurs
+    $tmp0 = $edit0;
+    while ( $tmp0 =~ /f(\d+)/ ) { $f = $1; $tmp0 =~ s/f$f//; $f_max = $f if $f > $f_max }
+
+    # remplacement de fx-y par fx f. f. fy  + recherche des champs fx pour les erreurs
+    while ( $edit0 =~ /(f(\d+)-(\d+))/ ) {
+       $f = '';
+       for ( $2 .. $3 ) { $f .= "f$_".$d0; $f_max = $_ if $_ > $f_max }
+       chop($f);
+       $edit0 =~ s/$1/$f/ }
+
+    # recherche des erreurs de champs absents
+    $l = 0;
+    foreach $line (split/\n/,$get) {
+       $l++;
+       @tab = split/$d/,$line;
+       if ( $f_max > @tab ) { &tag('fg_error',$l); $err = 1 } }
+
+    # création du tableau %line pour supprimer les lignes identiques , trier et recherche des erreurs sur les adresses IP
+    $l = 0;
+    %line = ();
+    foreach $line (split/\n/,$get) {
+       $l++;
+       $f = 0; # compteur de champ sur la ligne
+       if ( $s ) {
+          foreach(split/$d/,$line) { if ( ++$f eq $s ) { $line{$line} = $_ } } }
+       elsif ( $i ) {
+          $deb = ''; # debut de ligne pour calculer $x = debut du champ et $z = longueur du champ
+          foreach(split/$d/,$line) {
+             if ( ++$f eq $i ) {
+                if ( Net::Kalk::error('ip',$_) ) { if ( $line =~ /($deb)$_/ ) { $x = length($1) } ; $z = length($_) ; &tag('fg_error',$l,$x,$x+$z); $err = 1 }
+                else { $line{$line} = Net::Kalk::x12('ip',$_) ; &tag('bg',$l) } }
+             else { $deb .= "$_$d" } } }
+       else { $line{$line} = $l } }
+
+    return if $err;
+
+    # trier
+    $text = '';
+    foreach ( sort { if ($s) { $line{$a} cmp $line{$b} } else { $line{$a} <=> $line{$b} } } keys %line ) { $text .= "$_\n" }
+
+    # ajouter un numero de sequence à la ligne nx,y
+    $n = $n1 = $n2 = 0;
+    if ( $edit0 =~ /(n(\d+)-(\d+))/ ) { $n = $1; $n1 = $2; $n2 = $3 }
+
+    # formater
+    my $tmp1 = '';
+    foreach $line (split/\n/,$text) {
+       @field = ();
+       $field[0] = $line;
+       foreach (split/$d/,$line) { push(@field,$_) }
+
+       $tmp0 = $edit0;
+       while ( $tmp0 =~ /(f(\d+))/     ) { $x1 = $1 ; $x2 = $2 ; $tmp0 =~ s/$x1/$field[$x2]/ }
+       if    ( $tmp0 =~ /$v{all_line}/ ) { $tmp0 =~ s/$v{all_line}/$line/ }
+       if    ( $n                      ) { $tmp0 =~ s/$n/$n1/; $n1 += $n2 }
+       $tmp1 .= "$tmp0\n" }
+    $text = $tmp1; 
+
+    &display('',$text) }
+
+# fonctions range , summary , included
+sub range {
+    $l = $err = 0;
+    $start = $end = '';
+    &get;
+    foreach (split/\n/,$get) {
+       $l++;
+       $_ = $1 if /^\s+(.*)/;
+       $_ = $1 if /^(.*?)\s+$/;
+       next if /^$/ ;
+       if ( ! $end && /(.*?)\s+(.*)/ ) {
+          $start = $1;
+          $end   = $2;
+          if ( Net::Kalk::error('ip',$start) || Net::Kalk::error('ip',$end) ) { &tag('fg_error',$l); $err = 1; $end = 0 }
+          else { &tag('bg',$l) } }
+       else { &tag('fg_error',$l) ;$err = 1 } }
+
+    return if ! $start || ! $end || $err;
+    &display($v{text_range_title},&Net::Kalk::range($start,$end)) }
+
+sub list_get {
+    $l = $err = 0;
+    $data = '';
+    my ($addr,$mask);
+    &get;
+    foreach (split/\n/,$get) {
+       $l++;
+       $_ = $1 if /^\s+(.*)/;
+       $_ = $1 if /^(.*?)\s+$/;
+       next if /^$/ ;
+       if ( /(.*)\/(.*)/ ) {
+          $addr = $1;
+          $mask = $2;
+          if ( Net::Kalk::error('ip',$addr) || Net::Kalk::error('cidr',$mask) ) { &tag('fg_error',$l); $err = 1 }
+          else { $data .= "$_;"; &tag('bg',$l) } }
+       elsif ( /(.*?)\s+(.*)/ ) {
+          $addr = $1;
+          $mask = $2;
+          if ( Net::Kalk::error('ip',$addr) ) { &tag('fg_error',$l); $err = 1 }
+          if ( Net::Kalk::error('mask',$mask) && Net::Kalk::error('mask',Net::Kalk::invers($mask)) ) { &tag('fg_error',$l); $err = 1 }
+          else { $data .= "$_;"; &tag('bg',$l) } }
+       else {
+          if ( Net::Kalk::error('ip',$_) ) { &tag('fg_error',$l); $err = 1 }
+          else { $data .= "$_;"; &tag('bg',$l) } } }
+    $err = 1 if $fct =~ /included/ && $l == 1 }
+
+sub list_result {
+    $fct  = "Net::Kalk::$_[0]";
+    $data = '';
+    &list_get;
+    return if ! $data || $err;
+    &display($v{text_range_title},&$fct($data,$edit2)) }
+
+sub summary  { &list_result('summary') }
+sub included { &list_result('included') }
+
+# fonctions affichage
+sub display {
+    ($title,$text) = @_;
+    return if ! $text;
+    $t{display}->configure(-text=>$title);
+    chomp ($text);
+    $display->configure(-state=>'normal');
+    $display->delete('1.0','end');
+    $display->insert('1.0',$text);
+    $display->configure(-state =>'disable');
+    $book->raise('display') }
+
+sub help_page { $page_old = $page; &help($page) }
+
+sub help {
+    if ( $_[1] && $_[1] eq 'bind' ) { shift ; shift }
+    my $file = $_[0];
+    my $line = $nb = 0;
+    $help->configure(-state=>'normal');
+    $help->delete('1.0','end');
+
+    open(FILE,"<$v{mode}",$file);
+    while(<FILE>) {
+       $line++;
+       $help->insert('end',$_);
+       if ( $file eq 'menu' && ! /^$/ ) {
+          $nb++;
+          $tag = "help_$nb";
+          $help->tagDelete   ($tag);
+          $help->tagAdd      ($tag,"$line.1","$line.end");
+          $help->tagBind     ($tag,"<Enter>",[\&invers,$tag]) ;
+          $help->tagBind     ($tag,"<Leave>",[\&normal,$tag]) ;
+          $help->tagBind     ($tag,"<ButtonRelease-1>",[\&help,'bind',$v{$tag}]);
+          $help->tagConfigure($tag,-foreground=>$v{fg_entry},-background=>$v{bg}) } }
+    close(FILE);
+
+    $help->configure(-state =>'disable');
+    $book->raise('help') }
+
+sub normal {
+    $help->tagConfigure($_[1],-foreground=>$v{fg_entry},-background=>$v{bg}); 
+    $help->configure(-cursor=>'xterm') }
+
+sub invers {
+    $help->tagConfigure($_[1],-background=>$v{fg_entry},-foreground=>$v{bg}); 
+    $help->configure(-cursor=>'hand2') }
+
+# fonctions bind : clavier souris
+sub page {
+    $page_old = $page;
+    $page = $book->raised;
+    if    ($page eq 'quit' ) { exit }
+    elsif ($page eq 'reset') { &reset }
+    else { $f{$page}->focus if $f{$page} } }
+
+sub enter {
+    return if $page ne 'net';
+    return if $f{net} !~ /Entry/;
+
+    if ( $f{net} eq $e{add_mask} ) { net_add_mask }
+    else { net_add } }
+
+sub escape {
+    if ( $page =~ /help|display/ ) { $page_old = $page; &reset; return }
+
+    $f{$page} = $p{$page}->focusCurrent;
+    return if $f{$page} !~ /Entry/;
+    $f{$page}->delete('0.0','end');
+    config_entry($f{$page}) }
+
+sub reset {
+    $page = $page_old;
+    $book->raise($page);
+    if    ($page eq 'help') { &help('menu') }
+    elsif ($page eq 'net' ) {
+       $add_mask = $ip = '';
+       for(@net)  { $$_ = '' }
+       for(@add)  { $$_ = '' ; config_entry($e{$_}) }
+       for(@mask) { $$_ = '' ; config_entry($e{$_}) if $e{$_} }
+       $f{net} = $e{add_mask};
+       $e{add_mask}->focus }
+    elsif ($page eq 'edit') {
+       $edit1 = $edit2 = $text = '';
+       $f{edit} = $edit;
+       $edit->delete('1.0','end');
+       $edit->focus }
+    elsif ($page eq 'display') { # copier display dans edit
+       $text = $display->get('1.0','end');
+       $edit->delete('1.0','end');
+       $edit->insert('1.0',$text);
+       $f{edit} = $edit;
+       $edit->focus;
+       $book->raise('edit') } }
+
+sub focusin {
+    return if $page !~ /net/;
+    return if $p{$page}->focusCurrent !~ /Entry/;
+    $f{$page} = $p{$page}->focusCurrent;
+    $f{old} = $f{$page} }
+
+sub space_0 { my($ref)=@_; $$ref = $1 if $$ref =~ /^\s+(.*?)$/ } # suppression des espaces du début
+sub space_1 { my($ref)=@_; $$ref = $1 if $$ref =~ /^(.*?)\s+$/ } # suppression des espaces de la fin
+sub space_2 { my($ref)=@_; $$ref = $1 if $$ref =~ /^(.*?)#/    } # suppression à partir de #....
+
+########################## programme principal ################################
+
+$var = "/usr/local/facila/kalkulo/var/$ENV{LANG}";
+
+exit if ! -d $var;
+
+$add_mask = '';
+$x12 = $decimal = $hexa = $binary = '';
+$help = $edit = $display = '';
+@add  = ('x12','decimal','hexa','binary');
+@mask = ('mask','cidr','wildcard','mask_cidr');
+@net  = ('network','broadcast','nb_add','nb_net');
+
+# %v : variable
+# %p : page
+# %f : focus
+# %b : bouton
+# %t : texte
+# %e : entree
+# %r : resultat
+
+$v{mode} = ''; $v{mode} = ':encoding(UTF-8)' if $ENV{LANG} =~ /UTF-8/;
+
+# initialisation du tableau %v contenant les variables à partir du fichier init
+chdir $var;
+open(FILE,"<$v{mode}",'init');
+while(<FILE>) {
+   next if /^#|^\s+$|^$/; # lignes ignorées
+
+   space_2(\$_);
+   space_0(\$_);
+   space_1(\$_);
+
+   if (/^(.*?)\s+(.*)$/) { $v{$1} = $2 ; $v{$1} =~ tr/\"//d } } # suppression des guillemets
+close(FILE);
+chdir 'help';
+
+use Tk;
+use Tk::NoteBook;
+use Net::Kalk;
+
+$main = MainWindow->new  ;
+$main->title($v{title})  ;
+$main->geometry($v{geo}) ;
+$main->setPalette($v{bg});
+$main->resizable(0,0)    ;
+$main->bind('<Escape>'  ,\&escape);
+$main->bind('<Return>'  ,\&enter);
+$main->bind('<KP_Enter>',\&enter);
+$main->bind('<FocusOut>',\&enter);
+$main->bind('<FocusIn>' ,\&focusin);
+$main->bind('<F1>'      ,\&help_page);
+
+# notebook 
+$book = $main->NoteBook->pack(-fill=>'both',-expand=>1);
+
+# pages
+@page = ('help','net','edit','display','reset','quit');
+for(@page) { $p{$_} = $book->add($_,-label=>$v{"text_$_"},-raisecmd=>\&page) }
+
+# page help
+$help = $p{help}->Scrolled('Text',-scrollbars=>'osoe')->pack(-fill=>'both',-expand=>1);
+
+# page net
+sub place { $_[0] = $_[1]->place(-relx=>$_[2],-rely=>$_[3],-anchor=>'w') }
+
+place( $t{add_mask}  , $p{net}->Label(-text=>$v{text_add_mask} ) , 0.1 , 0.08 );
+place( $t{ip}        , $p{net}->Label(-text=>$v{text_ip}       ) , 0.1 , 0.18 );
+place( $t{mask}      , $p{net}->Label(-text=>$v{text_mask}     ) , 0.1 , 0.24 );
+place( $t{wildcard}  , $p{net}->Label(-text=>$v{text_wildcard} ) , 0.1 , 0.30 );
+place( $t{network}   , $p{net}->Label(-text=>$v{text_network}  ) , 0.1 , 0.40 );
+place( $t{broadcast} , $p{net}->Label(-text=>$v{text_broadcast}) , 0.1 , 0.46 );
+place( $t{nb_add}    , $p{net}->Label(-text=>$v{text_nb_add}   ) , 0.1 , 0.56 );
+place( $t{nb_net}    , $p{net}->Label(-text=>$v{text_nb_net}   ) , 0.1 , 0.62 );
+place( $t{x12}       , $p{net}->Label(-text=>$v{text_x12}      ) , 0.1 , 0.72 );
+place( $t{decimal}   , $p{net}->Label(-text=>$v{text_decimal}  ) , 0.1 , 0.78 );
+place( $t{hexa}      , $p{net}->Label(-text=>$v{text_hexa}     ) , 0.1 , 0.84 );
+place( $t{binary}    , $p{net}->Label(-text=>$v{text_binary}   ) , 0.1 , 0.90 );
+
+place( $e{add_mask}  , $p{net}->Entry(-textvariable=>\$add_mask ) , 0.4 , 0.08 );
+
+place( $r{ip}        , $p{net}->Label(-textvariable=>\$ip       ) , 0.4 , 0.18 );
+place( $r{mask}      , $p{net}->Label(-textvariable=>\$mask_cidr) , 0.4 , 0.24 );
+place( $r{wildcard}  , $p{net}->Label(-textvariable=>\$wildcard ) , 0.4 , 0.30 );
+place( $r{network}   , $p{net}->Label(-textvariable=>\$network  ) , 0.4 , 0.40 );
+place( $r{broadcast} , $p{net}->Label(-textvariable=>\$broadcast) , 0.4 , 0.46 );
+place( $r{nb_add}    , $p{net}->Label(-textvariable=>\$nb_add   ) , 0.4 , 0.56 );
+place( $r{nb_net}    , $p{net}->Label(-textvariable=>\$nb_net   ) , 0.4 , 0.62 );
+
+place( $e{x12}       , $p{net}->Entry(-textvariable=>\$x12      ) , 0.4 , 0.72 );
+place( $e{decimal}   , $p{net}->Entry(-textvariable=>\$decimal  ) , 0.4 , 0.78 );
+place( $e{hexa}      , $p{net}->Entry(-textvariable=>\$hexa     ) , 0.4 , 0.84 );
+place( $e{binary}    , $p{net}->Entry(-textvariable=>\$binary   ) , 0.4 , 0.90 );
+
+#page edit
+$fe1 = $p{edit}->Frame->pack(-fill=>'x');
+$fe2 = $p{edit}->Frame->pack(-fill=>'x');
+$fe3 = $p{edit}->Frame->pack(-side=>'bottom',-fill=>'both',-expand=>1);
+
+$b = 0;
+@button = ('find','replace','format','range','summary','included');
+for(@button) {
+   $b++;
+   $t{$b} = $fe1->Label(-text=>' ')->pack(-side=>'left') if $b == 4;
+   $b{$b} = $fe1->Button(-text=>$v{"text_$_"},-command=>\&$_);
+   $b{$b}->bind("<Button-3>",[\&help,'bind',"edit_$_"]); 
+   $b{$b}->pack(-side=>'left',-fill=>'x',-expand=>1) }
+
+$e{edit1} = $fe2->Entry(-textvariable=>\$edit1)->pack(-side=>'left');
+$t{edit0} = $fe2->Label(-text=>' '            )->pack(-side=>'left');
+$e{edit2} = $fe2->Entry(-textvariable=>\$edit2)->pack(-side=>'left');
+
+$edit = $fe3->Scrolled('Text',-scrollbars=>'osoe')->pack(-fill=>'both',-expand=>1);
+
+#page display
+       $fd1 = $p{display}->Frame->pack(-fill=>'x');
+       $fd2 = $p{display}->Frame->pack(-side=>'bottom',-fill=>'both',-expand=>1);
+$t{display} = $fd1->Label->pack(-side=>'left');
+   $display = $fd2->Scrolled('Text',-scrollbars=>'osoe')->pack(-fill=>'both',-expand=>1) ;
+
+# configure
+sub config_text   { $_[0]->configure(-fg=>$v{fg_text} ,-bg=>$v{bg},-font=>$v{font}) }
+sub config_invers { $_[0]->configure(-bg=>$v{fg_text} ,-fg=>$v{bg},-font=>$v{font}) }
+sub config_entry  { $_[0]->configure(-fg=>$v{fg_entry},-bg=>$v{bg},-font=>$v{font}) }
+sub config_error  { $_[0]->configure(-fg=>$v{fg_error}) }
+
+# tag color foreground
+sub tag {
+    my ($fg,$l,$x,$y) = @_ ; 
+    $x = 0     if ! $x;
+    $y = 'end' if ! $y;
+    $tag = "tag_$l";
+    $edit->tagDelete   ($tag);
+    $edit->tagAdd      ($tag,"$l.$x","$l.$y");
+    $edit->tagConfigure($tag,-foreground=>$v{$fg}) }
+
+for('book','display','help') { config_text($$_) }
+config_invers($edit);
+$book->configure(-inactivebackground=>$v{bg_inactive},-backpagecolor=>$v{bg});
+$edit->configure(-wrap=>'none',-state=>'normal',-insertbackground=>$v{bg});
+$display->configure(-state =>'disable');
+foreach(keys %b) { config_entry($b{$_}) }
+foreach(keys %t) { $t{$_}->configure(-font=>$v{font}) }
+foreach(keys %r) { $r{$_}->configure(-font=>$v{font}) }
+foreach(keys %e) { $e{$_}->configure(-width=>18,-insertbackground=>$v{fg_text}); config_entry($e{$_}) }
+$e{add_mask}->configure(-width=>36);
+$e{binary}  ->configure(-width=>36);
+$e{edit1}   ->configure(-width=>50);
+$e{edit2}   ->configure(-width=>34);
+$f{old}  = $e{add_mask};
+$f{net}  = $e{add_mask};
+$f{edit} = $edit;
+help('menu');
+$page = $v{init};
+$book->raise($page);
+
+MainLoop ;
