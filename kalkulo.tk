@@ -298,7 +298,7 @@ sub help {
           $help->tagConfigure($tag,-foreground=>$v{fg_entry},-background=>$v{bg}) } }
     close(FILE);
 
-    $help->delete("$line.end",'end'); # suppression saut de ligne pour la dernière ligne du fichier
+    $help->delete("$line.end"); # suppression du dernier saut de ligne
     $help->configure(-state =>'disable');
     $book->raise('help') }
 
