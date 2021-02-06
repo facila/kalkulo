@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# version  : 2.10 - November 2020
+# version  : 2.11 - February 2021
 # author   : Thierry Le Gall
 # contact  : facila@gmx.fr
 # web site : https://github.com/facila/kalkulo
@@ -157,13 +157,16 @@ sub format {
     $l = 0;
     foreach $line (split/\n/,$get) {
        $l++;
+       next if $line eq '' || $line =~ /^\s+$/; # lignes vides
        @tab = split/$d/,$line;
-       if ( $f_max > @tab ) { &tag('fg_error',$l); $err = 1 } }
+       if ( $f_max > @tab ) { &tag('fg_error',$l); $err = 1 }
+       else                 { &tag('bg_text' ,$l); } }
 
     # création du tableau %line pour supprimer les lignes identiques , trier et recherche des erreurs sur les adresses IP
     $l = 0;
     %line = ();
     foreach $line (split/\n/,$get) {
+       next if $line eq '' || $line =~ /^\s+$/; # suppression des lignes vides
        $l++;
        $f = 0; # compteur de champ sur la ligne
        if ( $s ) {
@@ -264,7 +267,7 @@ sub display {
     ($title,$text) = @_;
     return if ! $text;
     $t{display}->configure(-text=>$title);
-    chomp ($text);
+    chomp($text);
     $display->configure(-state=>'normal');
     $display->delete('1.0','end');
     $display->insert('1.0',$text);
@@ -295,6 +298,7 @@ sub help {
           $help->tagConfigure($tag,-foreground=>$v{fg_entry},-background=>$v{bg}) } }
     close(FILE);
 
+    $help->delete("$line.end",'end'); # suppression saut de ligne pour la dernière ligne du fichier
     $help->configure(-state =>'disable');
     $book->raise('help') }
 
