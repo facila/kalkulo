@@ -1,4 +1,4 @@
-# kalkulo : Calculatrice IP
+# facila kalkulo : Calculatrice IP
 ### Installation de facila kalkulo
 ```
 vous devez avoir installé au préalable :
