@@ -4,7 +4,7 @@
 # exécuter la commande : sudo sh install.sh
 
 APPLI=kalkulo
-VERSION=2.11
+VERSION=2.12
 
 DIR=/usr/local/facila
 LG=fr_FR.UTF-8
