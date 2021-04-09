@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# version  : 2.11 - February 2021
+# version  : 2.12 - April 2021
 # author   : Thierry Le Gall
 # contact  : facila@gmx.fr
 # web site : https://github.com/facila/kalkulo
@@ -236,7 +236,7 @@ sub list_get {
        $_ = $1 if /^\s+(.*)/;
        $_ = $1 if /^(.*?)\s+$/;
        next if /^$/ ;
-       if ( /(.*)\/(.*)/ ) {
+       if ( /(.*?)\s*\/(.*)/ ) {
           $addr = $1;
           $mask = $2;
           if ( Net::Kalk::error('ip',$addr) || Net::Kalk::error('cidr',$mask) ) { &tag('fg_error',$l); $err = 1 }
