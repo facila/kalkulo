@@ -5,8 +5,8 @@ vous devez avoir installé au préalable :
 - perl et perl-tk ( Tk.pm )
 - facila/Net::Kalk depuis le CPAN : https://metacpan.org/pod/Net::Kalk
 
-se positionner dans le répertoire contenant kalkulo_install.sh et le fichier .tar.gz
-exécuter : sudo sh kalkulo_install.sh
+se positionner dans le répertoire contenant install.sh et le fichier .tar.gz
+exécuter : sudo sh install.sh kalkulo "version de kalkulo à installer"
 ```
 ### Utilisation de facila kalkulo
 ```
