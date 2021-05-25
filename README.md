@@ -5,8 +5,14 @@ vous devez avoir installé au préalable :
 - perl et perl-tk ( Tk.pm )
 - facila/Net::Kalk depuis le CPAN : https://metacpan.org/pod/Net::Kalk
 
-se positionner dans le répertoire contenant install.sh et le fichier .tar.gz
-exécuter : sudo sh install.sh kalkulo "version de kalkulo à installer"
+télécharger stato à partir de github :
+- cliquer sur : Code
+- cliquer sur : Download ZIP
+
+se positionner dans le répertoire contenant kalkulo-main.zip et taper les commandes suivantes :
+- unzip kalkulo-main.zip
+- cd stato-main
+- sudo sh install.sh kalkulo 2.13
 ```
 ### Utilisation de facila kalkulo
 ```
