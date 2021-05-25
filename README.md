@@ -5,7 +5,7 @@ vous devez avoir installé au préalable :
 - perl et perl-tk ( Tk.pm )
 - facila/Net::Kalk depuis le CPAN : https://metacpan.org/pod/Net::Kalk
 
-télécharger stato à partir de github :
+télécharger kalkulo à partir de github :
 - cliquer sur : Code
 - cliquer sur : Download ZIP
 
