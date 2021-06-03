@@ -12,7 +12,7 @@ téléchargez kalkulo à partir de github :
 positionnez vous dans le répertoire contenant kalkulo-main.zip et tapez les commandes suivantes :
 - unzip kalkulo-main.zip
 - cd kalkulo-main
-- sudo sh install.sh kalkulo 2.13
+- sudo sh install.sh kalkulo.2.13.tar.gz
 ```
 ### Utilisation de facila kalkulo
 ```
