@@ -13,7 +13,7 @@ positionnez vous dans le répertoire contenant kalkulo-main.zip et tapez les com
 - unzip kalkulo-main.zip
 - cd kalkulo-main
 - chmod +x install.sh
-- sudo sh install.sh kalkulo.2.13.tar.gz
+- sudo sh install.sh kalkulo.2.14.tar.gz
 ```
 ### Utilisation de facila kalkulo
 ```
