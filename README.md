@@ -18,7 +18,6 @@ tapez les commandes suivantes :
 - install.sh kalkulo.2.15.tar.gz
 
 l'installation crée une variable globale "export FACILA=$DIR/facila" dans ~/.bashrc
-
 ```
 ### Utilisation de facila kalkulo
 ```
