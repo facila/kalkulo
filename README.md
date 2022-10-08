@@ -10,7 +10,7 @@ téléchargez kalkulo à partir de github :
 - cliquez sur : Download ZIP
 
 positionnez vous dans le répertoire $DIR où vous souhaitez installer facila kalkulo
-copier kalkulo-main.zip dans ce répertoire
+copier le fichier téléchargé kalkulo-main.zip dans ce répertoire
 
 tapez les commandes suivantes :
 - unzip kalkulo-main.zip
