@@ -12,15 +12,15 @@ téléchargez kalkulo à partir de github :
 positionnez vous dans le répertoire contenant kalkulo-main.zip et tapez les commandes suivantes :
 - unzip kalkulo-main.zip
 - cd kalkulo-main
-- sudo sh install.sh kalkulo.2.14.tar.gz
+- install.sh kalkulo.2.15.tar.gz
 ```
 ### Utilisation de facila kalkulo
 ```
-/usr/local/facila/kalkulo/prg/kalkulo
+$FACILA/kalkulo/prg/kalkulo
 ```
 ### L'utilisateur peut créer un alias dans .bashrc
 ```
-alias kalkulo='/usr/local/facila/kalkulo/prg/kalkulo'
+alias kalkulo='$FACILA/kalkulo/prg/kalkulo'
 ```
 ### La commande devient alors
 ```
