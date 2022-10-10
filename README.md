@@ -46,4 +46,4 @@ si vous souhaitez partager kalkulo à un groupe d'utilisateurs vous devez :
 - créer les utilisateurs en les mettant dans ce groupe
 
 les utilisateurs doivent se connecter au serveur avec la commande : ssh -X SERVEUR
-'''
+```
