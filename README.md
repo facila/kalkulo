@@ -40,7 +40,7 @@ kalkulo
 ```
 ### Application partagée , commandes à faire en root
 ```
-si vous souhaitez partager stato à un groupe d'utilisateurs vous devez :
+si vous souhaitez partager kalkulo à un groupe d'utilisateurs vous devez :
 - créer un groupe pour kalkulo ou utiliser un groupe déjà existant
 - mettre les répertoires et fichiers de kalkulo dans ce group ( vérifier les droits r-x )
 - créer les utilisateurs en les mettant dans ce groupe
