@@ -54,7 +54,7 @@ proc_lang ()
 {
 [ "$LG" = "$LANG" ] && return
 
-echo copie du répertoire d'origine $LG dans la langue de la machine $LANG
+echo "copie du répertoire d'origine $LG dans la langue de la machine $LANG"
 cp -R $APPLI/var/$LG $APPLI/var/$LANG
 echo "votre langue est $LANG"
 echo "vous pouvez traduire les fichiers ( menu , aide , ... )"
