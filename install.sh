@@ -76,7 +76,7 @@ echo "commande : $FACILA/$APPLI/prg/$APPLI"
 
 #################################################################################
 
-FILE=$1
+ FILE=$1
 APPLI=`echo $FILE | cut -f1 -d.`
   EXT=`echo $FILE | cut -f4-5 -d.`
   DIR=$PWD/$APPLI-main
