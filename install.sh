@@ -6,7 +6,7 @@
 proc_exit ()
 {
 perl -e "$1" 2>/dev/null
-[ $? != "0" ] && { echo "vous devez d'abbord installer : $2" ; exit ; }
+[ $? != "0" ] && { echo "  vous devez d'abbord installer : $2" ; exit ; }
 }
 
 proc_appli ()
@@ -63,8 +63,8 @@ proc_lang ()
 
 echo "copie du répertoire d'origine $LG dans la langue de la machine $LANG"
 cp -R $APPLI/var/$LG $APPLI/var/$LANG
-echo "votre langue est $LANG"
-echo "vous pouvez traduire les fichiers ( menu , aide , ... )"
+echo "  votre langue est $LANG"
+echo "  vous pouvez traduire les fichiers ( menu , aide , ... )"
 }
 
 proc_end ()
@@ -90,18 +90,18 @@ APPLI=`echo $FILE | cut -f1 -d.`
    LG=fr_FR.UTF-8
 
 FILE=$DIR/$FILE
-[ "$EXT" != "tar.gz" ] && { echo le fichier $FILE doit être un tar.gz ; exit ; }
-[ ! -s "$FILE"       ] && { echo fichier $FILE absent ; exit ; }
+[ "$EXT" != "tar.gz" ] && { echo "le fichier $FILE doit être un tar.gz" ; exit ; }
+[ ! -s "$FILE"       ] && { echo "fichier $FILE absent" ; exit ; }
 [ -f "$DIR/install_$APPLI" ] && INSTALL=$DIR/install_$APPLI
 
-echo vérification des dépendances
+echo "vérification des dépendances"
 proc_perl
 proc_appli
 
-echo verification de facila
+echo "verification de facila"
 proc_facila
 
-echo installation de $FILE
+echo "installation de $FILE"
 cd $FACILA
 proc_old
 tar -xzf $FILE
