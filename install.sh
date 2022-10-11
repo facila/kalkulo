@@ -24,16 +24,20 @@ proc_exit 'use Tk' perl-tk
 
 proc_facila ()
 {
-OK=1
-[ "$FACILA" != "" ] && return
-
-OK=0
-FACILA="$PWD/facila"
-printf "\n# FACILA\nexport FACILA=$FACILA\n" >> ~/.bashrc
-if [ ! -d $FACILA ]
-then mkdir -p facila/share/save
-     cd facila/share/save 
-     mkdir install old archive version
+OK_FACILA=1
+[ "$FACILA" = "" ] && { OK_FACILA=0 ; FACILA=$PWD/facila ; }
+          
+SAVE=$FACILA/share/save
+          
+if [ $OK_FACILA = 0 ]
+then echo "  ajout de FACILA dans .bashrc"
+     printf "\n# FACILA\nexport FACILA=$FACILA\n" >> ~/.bashrc
+     if [ ! -d $FACILA ]
+     then echo "  création des répertoires de facila"
+          mkdir -p $SAVE
+          cd $SAVE 
+          mkdir install old archive version
+     fi
 fi
 }
 
@@ -41,13 +45,16 @@ proc_old ()
 {
 [ "$INSTALL" = "" ] && return
 
-cd $FACILA/share/save/old
-echo sauvegarde ancienne version dans $PWD
-cat $INSTALL | while read OLD
-do mkdir -p $OLD # création des répertoires contenus dans $OLD
-   rmdir    $OLD # suppression du dernier repertoire de $OLD
-   mv $FACILA/$OLD $OLD.`date +%y%m%d_%H%M` 2> /dev/null
+OK_OLD=0
+cat $INSTALL | while read F
+do if [ -d $F -o -f $F ]
+   then OK_OLD=1
+        mkdir -p $SAVE/old/$F # création des répertoires contenus dans $F
+        rmdir    $SAVE/old/$F # suppression du dernier repertoire de $F
+        mv $F    $SAVE/old/$F.`date +%y%m%d_%H%M` 2> /dev/null
+   fi
 done
+[ $OK_OLD = 1 ] && "echo sauvegarde de l'ancienne version dans $SAVE/old"
 }
 
 proc_lang ()
@@ -62,16 +69,16 @@ echo "vous pouvez traduire les fichiers ( menu , aide , ... )"
 
 proc_end ()
 {
-mv ../$APPLI-main.zip install
-mv $FILE version
-rm -rf ../$APPLI-main 
+cd ..
+mv $APPLI-main.zip $SAVE/install
+mv $FILE           $SAVE/version
+rm -rf $APPLI-main
 
-echo
-if [ "$OK" = "1" ]
-then echo "vous pouvez exécuter $APPLI"
-else echo "fermer et relancer le shell pour exécuter $APPLI"
+if [ $OK_FACILA = 1 ]
+then echo "  vous pouvez exécuter $APPLI"
+else echo "  fermer et relancer le shell pour exécuter $APPLI"
 fi
-echo "commande : $FACILA/$APPLI/prg/$APPLI"
+echo "  commande : $FACILA/$APPLI/prg/$APPLI"
 }
 
 #################################################################################
@@ -79,25 +86,24 @@ echo "commande : $FACILA/$APPLI/prg/$APPLI"
  FILE=$1
 APPLI=`echo $FILE | cut -f1 -d.`
   EXT=`echo $FILE | cut -f4-5 -d.`
-  DIR=$PWD/$APPLI-main
+  DIR=$PWD/$APPLI-main  
    LG=fr_FR.UTF-8
 
 FILE=$DIR/$FILE
 [ "$EXT" != "tar.gz" ] && { echo le fichier $FILE doit être un tar.gz ; exit ; }
 [ ! -s "$FILE"       ] && { echo fichier $FILE absent ; exit ; }
-
 [ -f "$DIR/install_$APPLI" ] && INSTALL=$DIR/install_$APPLI
 
 echo vérification des dépendances
 proc_perl
 proc_appli
 
-echo verification ou initialisation de facila
+echo verification de facila
 proc_facila
 
 echo installation de $FILE
-proc_old
 cd $FACILA
+proc_old
 tar -xzf $FILE
 proc_lang
 proc_end
