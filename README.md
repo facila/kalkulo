@@ -42,7 +42,7 @@ kalkulo
 ```
 si vous souhaitez partager kalkulo à un groupe d'utilisateurs vous devez :
 - créer un groupe pour kalkulo ou utiliser un groupe déjà existant
-- mettre les répertoires et fichiers de kalkulo dans ce group ( vérifier les droits r-x )
+- mettre les répertoires et fichiers de kalkulo dans ce groupe ( vérifier les droits r-x )
 - créer les utilisateurs en les mettant dans ce groupe
 
 les utilisateurs doivent se connecter au serveur avec la commande : ssh -X SERVEUR
