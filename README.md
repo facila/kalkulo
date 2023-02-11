@@ -21,7 +21,7 @@ si la variable globale $FACILA n'existe pas
 - elle est créée dans ~/.bashrc : "export FACILA=~/facila"
 
 si il y a une ancienne version de kalkulo
-- les répertoires et fichiers de install_kalkulo sont copiés dans $FACILA/share/save//old
+- les répertoires et fichiers de install_kalkulo sont copiés dans $FACILA/share/save/old
 
 kalkulo-main.zip     est déplacé dans $FACILA/share/save/install
 kalkulo.v2.15.tar.gz est déplacé dans $FACILA/share/save/version
