@@ -15,7 +15,7 @@ tapez les commandes suivantes :
 - cd
 - mv $DIR_SOURCE/kalkulo-main.zip .
 - unzip kalkulo-main.zip
-- sh kalkulo-main/install.sh kalkulo.v2.15.tar.gz
+- sh kalkulo-main/install.sh kalkulo.v2.16.tar.gz
 
 si la variable globale $FACILA n'existe pas
 - elle est créée dans ~/.bashrc : "export FACILA=~/facila"
@@ -24,7 +24,7 @@ si il y a une ancienne version de kalkulo
 - les répertoires et fichiers de install_kalkulo sont copiés dans $FACILA/share/save/old
 
 kalkulo-main.zip     est déplacé dans $FACILA/share/save/install
-kalkulo.v2.15.tar.gz est déplacé dans $FACILA/share/save/version
+kalkulo.v2.16.tar.gz est déplacé dans $FACILA/share/save/version
 ```
 ### Utilisation de facila kalkulo
 ```
