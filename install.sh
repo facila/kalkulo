@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# version 2.01 octobre 2022
+# version 2.01 avril 2023
 # sh install.sh FICHIER
 
 proc_exit ()
