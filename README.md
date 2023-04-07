@@ -11,11 +11,13 @@ téléchargez kalkulo à partir de github :
 
 l'installation se fait dans le répertoire de l'utilisateur
 tapez les commandes suivantes :
-- DIR_SOURCE="nom du répertoire où se trouve le fichier téléchargé : kalkulo-main.zip"
-- cd
-- mv $DIR_SOURCE/kalkulo-main.zip .
-- unzip kalkulo-main.zip
-- sh kalkulo-main/install.sh kalkulo.v2.16.tar.gz
+  MAIN=kalkulo-main
+  TAR=kalkulo.v2.16.tar.gz
+  DIR="nom du répertoire où se trouve le fichier téléchargé : $MAIN.zip"
+  cd
+  mv $DIR/$MAIN.zip .
+  unzip $MAIN.zip
+  sh $MAIN/install.sh $TAR
 
 si la variable globale $FACILA n'existe pas
 - elle est créée dans ~/.bashrc : "export FACILA=~/facila"
@@ -23,8 +25,9 @@ si la variable globale $FACILA n'existe pas
 si il y a une ancienne version de kalkulo
 - les répertoires et fichiers de install_kalkulo sont copiés dans $FACILA/share/save/old
 
-kalkulo-main.zip     est déplacé dans $FACILA/share/save/install
-kalkulo.v2.16.tar.gz est déplacé dans $FACILA/share/save/version
+$MAIN.zip est déplacé dans $FACILA/share/save/install
+$TAR      est déplacé dans $FACILA/share/save/version
+
 ```
 ### Utilisation de facila kalkulo
 ```
