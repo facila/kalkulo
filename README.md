@@ -27,7 +27,6 @@ si il y a une ancienne version de kalkulo
 
 $MAIN.zip est déplacé dans $FACILA/share/save/install
 $TAR      est déplacé dans $FACILA/share/save/version
-
 ```
 ### Utilisation de facila kalkulo
 ```
